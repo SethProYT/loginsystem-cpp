@@ -2,5 +2,5 @@
 #include "headers.hpp"
 
 int main() {
-   nothing()
+   nothing();
 }

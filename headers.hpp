@@ -62,14 +62,22 @@ bool LoginAccount(std::string username, std::string password) {
 }
 
 
-void AccountChanges(std::string username, std::string password, std::string secret) {
+void AccountChanges(const std::string &username, const std::string& password, std::string secret) {
    std::ifstream databasetowrite("users.json");
    json data = json::parse(databasetowrite);
 
-   data["username"] = username;
-   data["password"] = password;
-   data["secret"] = secret;
+   std::cout << "Change the secret: ";
+   std::cin >> secret;
+
+   for (auto &user : data) {
+      if (user["username"] == username) {
+         if (user["password"] == password) {
+            user["special"] = secret;
+         }
+      }
+   }
 
 
-   data.dump(4);
+   std::ofstream writetodatabase("users.json");
+   writetodatabase << data.dump(4);
 }

@@ -26,7 +26,9 @@ int main() {
             std::cin >> username;
             std::cout << "Password: ";
             std::cin >> password;
-            LoginAccount(username, password);
+            if (LoginAccount(username, password)) {
+               AccountChanges(username, password, ":3");
+            }
             break;
             
         default:

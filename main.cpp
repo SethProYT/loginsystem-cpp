@@ -9,6 +9,7 @@ int main() {
     
     std::string username;
     std::string password;
+    std::string special;
 
     switch(answer) {
         case 'n':
@@ -26,8 +27,14 @@ int main() {
             std::cin >> username;
             std::cout << "Password: ";
             std::cin >> password;
-            if (LoginAccount(username, password)) {
-               AccountChanges(username, password, ":3");
+            std::cout << "Special Phrase: ";
+            std::cin >> special;
+            if (LoginAccount(username, password, special) == "true") {
+               AccountChanges(username, password, special);
+            } else if (LoginAccount(username, password, special) == "false") {
+                
+            } else if (LoginAccount(username, password, special) == "admin") {
+                AccountChanges(username, password, special, true);
             }
             break;
             

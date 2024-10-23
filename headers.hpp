@@ -2,18 +2,18 @@
 
 #include <iostream>
 #include <string>
-// We will use this later #include <vector>
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <filesystem>
 
 typedef nlohmann::json json;
 
-// Register function (haha im adding comments to look like ChatGPT that's what you're thinking aren't you?)
-void RegisterAccount(std::string username, std::string password) {
+
+void RegisterAccount(std::string username, std::string password, std::string special = ":3") {
     json NewAccount;
     NewAccount["username"] = username;
     NewAccount["password"] = password;
+    NewAccount["special"] = special;
     
     if (std::filesystem::exists("users.json")) {
 
@@ -44,6 +44,7 @@ bool LoginAccount(std::string username, std::string password) {
             if (user["username"] == username) {
                 if (user["password"] == password) {
                     std::cout << "Correct password and username" << std::endl;
+                    std::cout << "Secret: " << user["special"] << std::endl;
                     return true;
                 } else {
                     std::cout << "Correct user, but wrong password" << std::endl;
@@ -58,4 +59,17 @@ bool LoginAccount(std::string username, std::string password) {
     
     std::cout << "No users.json file found!" << std::endl;
     return false;
+}
+
+
+void AccountChanges(std::string username, std::string password, std::string secret) {
+   std::ifstream databasetowrite("users.json");
+   json data = json::parse(databasetowrite);
+
+   data["username"] = username;
+   data["password"] = password;
+   data["secret"] = secret;
+
+
+   data.dump(4);
 }

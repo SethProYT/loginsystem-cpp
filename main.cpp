@@ -18,7 +18,9 @@ int main() {
             std::cin >> username;
             std::cout << "Now give me your password: ";   
             std::cin >> password;
-            RegisterAccount(username, password);
+            std::cout << "Enter your special phrase: ";
+            std::cin >> special;
+            RegisterAccount(username, password, special);
             break;
             
         case 'y':

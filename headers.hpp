@@ -45,8 +45,9 @@ std::string LoginAccount(std::string username, std::string password, std::string
                 if (user["password"] == password) {
                     if (user["special"] == special) {
                         if (user["isAdmin"] == true)  {
-                            std::cout << "Admin Tag Found!" << std::endl;
+                            std::cout << "Admin tag found!" << std::endl;
                             return "admin";
+                            break;
                         }
                         return "true";
                     } else {
@@ -67,7 +68,7 @@ std::string LoginAccount(std::string username, std::string password, std::string
 }
 
 
-void AccountChanges(const std::string &username, const std::string& password, std::string secret, bool isAdmin = false) {
+void Admin(std::string username, std::string password, std::string special) {
     std::ifstream databaseFile("users.json");
     if (!databaseFile.is_open()) {
         std::cerr << "Error opening database file." << std::endl;
@@ -76,44 +77,107 @@ void AccountChanges(const std::string &username, const std::string& password, st
 
     json data = json::parse(databaseFile);
     databaseFile.close();
+    std::cout << "Choose two options: 1. Get users 2. Set admin status for user 3. Set special phrase for user: ";
+    char Ans;
+    std::cin >> Ans;
+    std::string targetUsername;
+    bool userFound = false;
+    int i = 0;
 
-    if (isAdmin) {
-        std::cout << "You may change the special phrase of any user." << std::endl;
-        std::cout << "Enter the username of the user you want to change: ";
-        std::string targetUsername;
-        std::cin >> targetUsername;
-
-        for (auto &user : data) {
-            if (user["username"] == targetUsername) {
-                std::cout << "Enter the new special phrase: ";
-                std::string newphrase;
-                std::cin >> newphrase;
-                user["special"] = newphrase;
-                return;
-            } else {
+    switch (Ans) {
+        case '3':
+            std::cout << "Enter user to replace: ";
+            std::cin >> targetUsername;
+            for (auto &user : data) {
+                if (user["username"] == targetUsername) {
+                    std::cout << "Enter the new special phrase: ";
+                    std::string newphrase;
+                    std::cin >> newphrase;
+                    user["special"] = newphrase;
+                    userFound = true;
+                    break;
+                }
+            }
+            if (!userFound) {
                 std::cout << "User not found." << std::endl;
-                return;
             }
-        }
+            break;
+        case '1':
+            for (auto &user : data) {
+                i++;
+                std::cout << "User " << i << ": " << user["username"] << " " << user["password"] << " " << user["special"] << std::endl;
+            }
+            break;
+        case '2':
+            std::cout << "Enter username: ";
+            std::cin >> targetUsername;
+            for (auto &user : data) {
+                if (user["username"] == targetUsername) {
+                    user["isAdmin"] = true;
+                    break;
+                }
+            }
+            break;
+        default:
+            std::cout << "Invalid option." << std::endl;
+            break;
     }
 
-    std::cout << "Change the secret: ";
-    std::cin >> secret;
-
-    for (auto &user : data) {
-        if (user["username"] == username) {
-            if (user["password"] == password) {
-                user["special"] = secret;
-            }
-        }
-    }
-
+    // Write the modified data back to the file
     std::ofstream outputFile("users.json");
     if (!outputFile.is_open()) {
         std::cerr << "Error writing to database file." << std::endl;
         return;
     }
-
     outputFile << data.dump(4);
     outputFile.close();
+}
+
+
+
+void AccountChanges(const std::string &username, const std::string& password, std::string secret, bool isAdmin = false) {
+        std::ifstream databaseFile("users.json");
+        if (!databaseFile.is_open()) {
+            std::cerr << "Error opening database file." << std::endl;
+            return;
+        }
+
+        json data = json::parse(databaseFile);
+        databaseFile.close();
+
+        if (isAdmin) {
+            Admin(username, password, secret);
+            return;
+        }
+
+        std::cout << "Change the secret: ";
+        std::cin >> secret;
+
+        for (auto &user : data) {
+            if (user["username"] == username) {
+                if (user["password"] == password) {
+                    user["special"] = secret;
+                }
+            }
+
+        std::cout << "Change the secret: ";
+        std::cin >> secret;
+
+        for (auto &user : data) {
+            if (user["username"] == username) {
+                if (user["password"] == password) {
+                    user["special"] = secret;
+                }
+            }
+        }
+
+        std::ofstream outputFile("users.json");
+        if (!outputFile.is_open()) {
+            std::cerr << "Error writing to database file." << std::endl;
+            return;
+        }
+
+        outputFile << data.dump(4);
+        outputFile.close();
+    }
 }
